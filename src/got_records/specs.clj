@@ -51,6 +51,7 @@
 (defn dob->string
   "takes a DOB as an inst and outputs a formatted string for the date"
   [dob]
+  {:pre [(inst? dob)]}
   (->> dob
        c/from-date
        (f/unparse date-formatter)))
