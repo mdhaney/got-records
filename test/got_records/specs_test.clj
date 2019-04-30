@@ -1,6 +1,9 @@
 (ns got-records.specs-test
   (:require [clojure.test :refer :all]
-            [got-records.specs :as nut]))
+            [clojure.test.check.clojure-test :refer [defspec]]
+            [clojure.test.check.properties :as prop]
+            [got-records.specs :as nut]
+            [clojure.spec.alpha :as s]))
 
 (deftest alphanumeric?-predicate-tests
   (testing "allows alphanumeric strings"
@@ -16,3 +19,10 @@
     (is (thrown? AssertionError (nut/alphanumeric? 10)))
     (is (thrown? AssertionError (nut/alphanumeric? {})))
     (is (thrown? AssertionError (nut/alphanumeric? [])))))
+
+;; generate 1000 random records and check against the spec (since we use custom generators)
+(defspec generated-data-fulfills-spec
+  1000
+  (prop/for-all [v (s/gen ::nut/person)]
+    (s/valid? ::nut/person v)))
+

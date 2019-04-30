@@ -18,8 +18,8 @@
       (s/gen values))))
 
 (s/def :person/last-name (s/with-gen
-                      (s/and string? alphanumeric?)
-                      (gen-from-resource "surnames.edn")))
+                           (s/and string? alphanumeric?)
+                           (gen-from-resource "surnames.edn")))
 
 (def female-gen (gen-from-resource "female.edn"))
 (def male-gen (gen-from-resource "male.edn"))
