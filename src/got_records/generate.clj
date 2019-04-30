@@ -6,19 +6,14 @@
             [clj-time.format :as f]
             [clojure.spec.gen.alpha :as gen]))
 
-(defn format-dob [dob]
-  (->> dob
-       c/from-date
-       (f/unparse (f/formatters :year-month-day))))
-
 (defn sample-data
   "generate n records of sample data using the given delimeter"
   [delim n]
   (let [extract-record (juxt :last-name
                              :first-name
-                             (comp name :gender)
+                             (comp specs/gender->string :gender)
                              :favorite-color
-                             (comp format-dob :date-of-birth))]
+                             (comp specs/dob->string :date-of-birth))]
     (->> (gen/sample (s/gen ::specs/person) n)
          (map #(->> (extract-record %)
                     (interpose delim)

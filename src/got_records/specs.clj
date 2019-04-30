@@ -2,6 +2,8 @@
   (:require [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
             [clojure.java.io :as io]
+            [clj-time.coerce :as c]
+            [clj-time.format :as f]
             [clojure.edn :as edn]))
 
 (defn alphanumeric?
@@ -40,3 +42,20 @@
                                            [50 (gen/hash-map :gender (gen/return :female) :first-name (female-gen))]])))
 
 (s/def ::person (s/merge ::person* ::person-gender*))
+
+;;
+;; data conversion helpers
+;;
+(def date-formatter (f/formatter "M/d/YYYY"))
+
+(defn dob->string
+  "takes a DOB as an inst and outputs a formatted string for the date"
+  [dob]
+  (->> dob
+       c/from-date
+       (f/unparse date-formatter)))
+
+(defn gender->string
+  "takes a gender keyword and outputs the string representation"
+  [gender]
+  (name gender))
