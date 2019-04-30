@@ -1,5 +1,8 @@
 (ns got-records.specs
-  (:require [clojure.spec.alpha :as s]))
+  (:require [clojure.spec.alpha :as s]
+            [clojure.spec.gen.alpha :as gen]
+            [clojure.java.io :as io]
+            [clojure.edn :as edn]))
 
 (defn alphanumeric?
   "predicate to test if a string only contains alphanumeric characters"
@@ -7,15 +10,33 @@
   {:pre [(string? s)]}
   (some? (re-matches #"\w*" s)))
 
-(s/def ::last-name (s/and string? alphanumeric?))
-(s/def ::first-name (s/and string? alphanumeric?))
+(defn gen-from-resource
+  "Create a generator from a resource file"
+  [f]
+  (let [values (edn/read-string (slurp (io/resource f)))]
+    (fn []
+      (s/gen values))))
 
-(def allowed-genders #{"Female" "Male"})
-(s/def ::gender (s/and string? allowed-genders))
+(s/def :person/last-name (s/with-gen
+                      (s/and string? alphanumeric?)
+                      (gen-from-resource "surnames.edn")))
 
-(def allowed-colors #{"Red" "Yellow" "Green" "Blue" "Brown" "Black" "Orange" "Purple"})
-(s/def ::favorite-color (s/and string? allowed-colors))
+(def female-gen (gen-from-resource "female.edn"))
+(def male-gen (gen-from-resource "male.edn"))
+(s/def :person/first-name (s/and string? alphanumeric?))
 
-(s/def ::date-of-birth (s/inst-in #inst "1900" #inst "2002"))
+(s/def :person/favorite-color (s/with-gen
+                          (s/and string? alphanumeric?)
+                          (gen-from-resource "colors.edn")))
 
-(s/def ::person (s/keys :req-un [::last-name ::first-name ::gender ::favorite-color ::date-of-birth]))
+(s/def :person/gender #{:female :male})
+
+(s/def :person/date-of-birth (s/inst-in #inst "1900" #inst "2002"))
+
+(s/def ::person* (s/keys :req-un [:person/last-name :person/favorite-color :person/date-of-birth]))
+(s/def ::person-gender* (s/with-gen
+                          (s/keys :req-un [:person/gender :person/first-name])
+                          #(gen/frequency [[50 (gen/hash-map :gender (gen/return :male) :first-name (male-gen))]
+                                           [50 (gen/hash-map :gender (gen/return :female) :first-name (female-gen))]])))
+
+(s/def ::person (s/merge ::person* ::person-gender*))
