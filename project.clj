@@ -2,4 +2,8 @@
   :dependencies [[org.clojure/clojure "1.10.0"]
                  [clj-time "0.15.0"]]
 
-  :profiles {:dev {:dependencies [[org.clojure/test.check "0.9.0"]]}})
+  :profiles {:dev {:dependencies [[org.clojure/test.check "0.9.0"]]}
+
+             :import {:main got-records.main.import}}
+
+  :aliases {"import" ["with-profile" "import" "do" "run"]})

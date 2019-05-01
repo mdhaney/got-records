@@ -67,5 +67,3 @@
                      (update-in [:skipped] + (:skipped item))
                      (update-in [:read] + (:read item))))
                {:data [] :skipped 0 :read 0})))
-
-(def sample-files ["data/data1.txt" "data/data2.txt" "data/data3.txt"])
