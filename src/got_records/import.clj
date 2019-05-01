@@ -1,5 +1,6 @@
 (ns got-records.import
   (:require [clojure.string :refer [split]]
+            [clojure.java.io :as io]
             [got-records.specs :as spec]
             [clojure.spec.alpha :as s]))
 
@@ -41,7 +42,30 @@
   (->> iseq
        (map line->person)
        (reduce (fn [acc item]
-                 (if (= item ::s/invalid)
-                   (update-in acc [:skipped] inc)
-                   (update-in acc [:data] conj item)))
-               {:data [] :skipped 0})))
+                 (let [acc (update-in acc [:read] inc)]
+                   (if (= item ::s/invalid)
+                     (update-in acc [:skipped] inc)
+                     (update-in acc [:data] conj item))))
+               {:data [] :skipped 0 :read 0})))
+
+(defn import-file
+  "given a filename, import all the records from that file"
+  [fname]
+  (try
+    (with-open [rdr (io/reader fname)]
+      (import-seq (line-seq rdr)))
+    (catch Exception e {:data [] :skipped 0 :read 0})))
+
+(defn import-all
+  "import and combine the results of all the given files"
+  [files]
+  (->> files
+       (map import-file)
+       (reduce (fn [acc item]
+                 (-> acc
+                     (update-in [:data] concat (:data item))
+                     (update-in [:skipped] + (:skipped item))
+                     (update-in [:read] + (:read item))))
+               {:data [] :skipped 0 :read 0})))
+
+(def sample-files ["data/data1.txt" "data/data2.txt" "data/data3.txt"])

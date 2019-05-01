@@ -61,3 +61,31 @@
            "Joe|Blow|male|purple|3/11/1969"]
       0 0 ""
       0 1 [""])))
+
+(deftest import-file-tests
+  (testing "importing our sample data files"
+    (are [expected-read expected-skipped filename]
+      (let [result (nut/import-file filename)
+            actual-read (:read result)
+            actual-skipped (:skipped result)]
+        (is (= expected-read actual-read))
+        (is (= expected-skipped actual-skipped))
+        (is (= (count (:data result)) (- actual-read actual-skipped))))
+
+      50 0 "data/data1.txt"
+      50 0 "data/data2.txt"
+      50 0 "data/data3.txt")))
+
+(deftest import-all-tests
+  (testing "importing our sample data files"
+    (are [expected-read expected-skipped filenames]
+      (let [result (nut/import-all filenames)
+            actual-read (:read result)
+            actual-skipped (:skipped result)]
+        (is (= expected-read actual-read))
+        (is (= expected-skipped actual-skipped))
+        (is (= (count (:data result)) (- actual-read actual-skipped))))
+
+      150 0 ["data/data1.txt" "data/data2.txt" "data/data3.txt"]
+      100 0 ["data/data1.txt" "data/data2.txt"]
+       50 0 ["data/data1.txt"])))
