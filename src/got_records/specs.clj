@@ -2,6 +2,7 @@
   (:require [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
             [clojure.java.io :as io]
+            [clojure.string :refer [upper-case]]
             [clj-time.coerce :as c]
             [clj-time.format :as f]
             [clojure.edn :as edn]))
@@ -56,7 +57,29 @@
        c/from-date
        (f/unparse date-formatter)))
 
+(defn string->dob
+  "parses a date string into an inst.  returns nil if unable to parse"
+  [dob-str]
+  {:pre [(string? dob-str)]}
+  (try
+    (->> dob-str
+         (f/parse date-formatter)
+         c/to-date)
+    (catch IllegalArgumentException e nil)))
+
 (defn gender->string
   "takes a gender keyword and outputs the string representation"
   [gender]
+  {:pre [(keyword? gender)]}
   (name gender))
+
+(def allowed-male #{"MALE" "M"})
+(def allowed-female #{"FEMALE" "F"})
+(defn string->gender
+  "takes a string and outputs the correct gender keyword, or nil"
+  [gender-str]
+  {:pre [(string? gender-str)]}
+  (let [gender (upper-case gender-str)]
+    (cond
+      (contains? allowed-male gender) :male
+      (contains? allowed-female gender) :female)))
