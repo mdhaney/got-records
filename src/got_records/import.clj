@@ -31,3 +31,17 @@
                    (update-in [:gender] spec/string->gender)
                    (update-in [:date-of-birth] spec/string->dob)))
     (catch AssertionError e ::s/invalid)))
+
+(defn import-seq
+  "from the given sequence, convert each line to person records.  returns a map
+   with the following keys:
+       :data - a list of imported records
+       :skipped - number of records which were skipped/dropped because of errors"
+  [iseq]
+  (->> iseq
+       (map line->person)
+       (reduce (fn [acc item]
+                 (if (= item ::s/invalid)
+                   (update-in acc [:skipped] inc)
+                   (update-in acc [:data] conj item)))
+               {:data [] :skipped 0})))

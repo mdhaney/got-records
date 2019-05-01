@@ -43,3 +43,21 @@
     (is (= ::s/invalid (nut/line->person "John|Smith|male|Blue")))
     (is (= ::s/invalid (nut/line->person "John|Smith|guy|Blue|1/1/2000")))
     (is (= ::s/invalid (nut/line->person "John|Smith|male|Blue|yesterday")))))
+
+(deftest import-seq-tests
+  (testing "importing a batch of records"
+    (are [expected-valid expected-skipped input]
+      (let [result (nut/import-seq input)
+            actual-skipped (:skipped result)
+            actual-valid (count (:data result))]
+        (is (= expected-valid actual-valid))
+        (is (= expected-skipped actual-skipped)))
+
+      3 0 ["John|Smith|male|Blue|1/1/2000"
+           "Mary|Jones|female|Green|1/1/1992"
+           "Joe|Blow|male|purple|3/11/1969"]
+      2 1 ["John|Smith|male|Blue|1/1/2000"
+           "Mary|Jones|female|Green"
+           "Joe|Blow|male|purple|3/11/1969"]
+      0 0 ""
+      0 1 [""])))
