@@ -83,3 +83,12 @@
     (cond
       (contains? allowed-male gender) :male
       (contains? allowed-female gender) :female)))
+
+;; helper to extract all the fields of a person record into a vector in the
+;; correct order for building reports
+(def extract-fields (juxt :last-name
+                          :first-name
+                          (comp gender->string :gender)
+                          :favorite-color
+                          (comp dob->string :date-of-birth)))
+

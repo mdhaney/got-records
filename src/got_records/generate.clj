@@ -9,17 +9,12 @@
 (defn sample-data
   "generate n records of sample data using the given delimeter"
   [delim n]
-  (let [extract-record (juxt :last-name
-                             :first-name
-                             (comp specs/gender->string :gender)
-                             :favorite-color
-                             (comp specs/dob->string :date-of-birth))]
-    (->> (gen/sample (s/gen ::specs/person) n)
-         (map #(->> (extract-record %)
-                    (interpose delim)
-                    (apply str)))
-         (interpose "\n")
-         (apply str))))
+  (->> (gen/sample (s/gen ::specs/person) n)
+       (map #(->> (specs/extract-fields %)
+                  (interpose delim)
+                  (apply str)))
+       (interpose "\n")
+       (apply str)))
 
 (def pipe-sample-data (partial sample-data "|"))
 (def space-sample-data (partial sample-data " "))
