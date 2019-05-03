@@ -1,0 +1,10 @@
+Schneider|Anastasia|female|Yellow|1/1/1970
+Miranda|Bianca|female|Purple|1/1/1970
+Goodman|Marcus|male|Yellow|1/1/1970
+Best|Bennett|male|Black|12/31/1969
+Cooley|Destinee|female|Purple|12/31/1969
+Moyer|Marc|male|Black|12/31/1969
+Gould|Erick|male|Purple|1/1/1970
+Oneal|Annie|female|Purple|12/31/1969
+Gould|Emma|female|Black|1/1/1970
+Olson|Kobe|male|Brown|12/31/1969

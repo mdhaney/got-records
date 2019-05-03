@@ -44,9 +44,7 @@
   (report-by-name [_]
     (report/sort-by-last-name-desc @db))
   (add-person [_ data]
-    (println "add-person data: " data (string? data))
     (let [result (imp/line->person data)]
-      (println "add-person result: " result)
       (if (= result ::s/invalid)
         nil
         (do

@@ -7,7 +7,7 @@
               [middleware :refer [new-middleware]])
             [ring.middleware.defaults :refer [wrap-defaults api-defaults]]
             [ring.middleware.params :refer [wrap-params]]
-            [ring.middleware.json :refer [wrap-json-response wrap-json-body]]
+            [ring.middleware.json :refer [wrap-json-response]]
             [environ.core :refer [env]]
             [got-records.handler :refer [api-routes]]
             [got-records.service :refer [new-person-service]]
@@ -19,7 +19,6 @@
     :api (component/using (new-endpoint api-routes) [:person-service])
     :middleware (new-middleware {:middleware [wrap-params
                                               wrap-json-response
-                                              #_[wrap-json-body {:keywords? true}]
                                               [wrap-defaults api-defaults]]})
     :handler (component/using (new-handler) [:middleware :api])
     :http (component/using (new-web-server (Integer. (env :http-port))) [:handler])))
