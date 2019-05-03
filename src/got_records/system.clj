@@ -19,7 +19,7 @@
     :api (component/using (new-endpoint api-routes) [:person-service])
     :middleware (new-middleware {:middleware [wrap-params
                                               wrap-json-response
-                                              [wrap-json-body {:keywords? true}]
+                                              #_[wrap-json-body {:keywords? true}]
                                               [wrap-defaults api-defaults]]})
     :handler (component/using (new-handler) [:middleware :api])
     :http (component/using (new-web-server (Integer. (env :http-port))) [:handler])))
